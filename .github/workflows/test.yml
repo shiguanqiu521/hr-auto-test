@@ -1,0 +1,38 @@
+name: HR Auto Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: [self-hosted, windows, local]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run tests
+      shell: bash
+      env:
+        API_BASE_URL: http://106.12.144.134:8080
+        FRONTEND_URL: http://106.12.144.134:5173
+        DB_HOST: 106.12.144.134
+        DB_PORT: 3306
+        DB_USER: root
+        DB_PASSWORD: root123
+        DB_NAME: hr_db
+        LOGIN_USERNAME: admin
+        LOGIN_PASSWORD: admin123
+      run: |
+        ./venv/Scripts/python.exe -m pytest tests/ -n auto --reruns 2 \
+          --html=reports/report.html --self-contained-html -v
+
+    - name: Upload report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report
+        path: reports/report.html
