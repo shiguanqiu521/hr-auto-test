@@ -9,26 +9,36 @@ on:
 
 jobs:
   test:
-    runs-on: [self-hosted, Windows, local]
+    runs-on: [self-hosted, Linux, local]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Run tests
-      shell: powershell
-      env:
-        API_BASE_URL: http://106.12.144.134:8080
-        FRONTEND_URL: http://106.12.144.134:5173
-        DB_HOST: 106.12.144.134
-        DB_PORT: 3306
-        DB_USER: root
-        DB_PASSWORD: root123
-        DB_NAME: hr_db
-        LOGIN_USERNAME: admin
-        LOGIN_PASSWORD: admin123
+    - name: Setup Python venv
+      shell: bash
       run: |
-        ./venv/Scripts/python.exe -m pytest tests/ -n auto --reruns 2 \
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        playwright install chromium
+        playwright install-deps
+
+    - name: Run tests
+      shell: bash
+      env:
+        API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
+        LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+      run: |
+        source venv/bin/activate
+        python -m pytest tests/ -n auto --reruns 2 \
           --html=reports/report.html --self-contained-html -v
 
     - name: Upload report
