@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run tests
-      shell: bash
+      shell: pwsh
       env:
         API_BASE_URL: http://106.12.144.134:8080
         FRONTEND_URL: http://106.12.144.134:5173
