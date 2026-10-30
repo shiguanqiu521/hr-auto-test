@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: [self-hosted, windows, local]
+    runs-on: [self-hosted, Windows, local]
 
     steps:
     - name: Checkout code
