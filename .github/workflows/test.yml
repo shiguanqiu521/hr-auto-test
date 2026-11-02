@@ -18,9 +18,11 @@ jobs:
     - name: Setup Python venv
       shell: bash
       run: |
-        python3 -m venv venv
+        if [ ! -d "venv" ]; then
+          python3 -m venv venv
+        fi
         source venv/bin/activate
-        pip install -r requirements.txt
+        pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
         playwright install chromium
         playwright install-deps
 
